@@ -4,6 +4,9 @@ from tkinter import ttk
 from notifypy import Notify
 from plyer import notification
 import time
+import pygame # for audio
+
+
 
 tasks = []
 def add_task():
@@ -83,6 +86,16 @@ def get_details():
                             app_name="Focus rah",
                             app_icon=None,
                             timeout=5)
+
+pygame.mixer.init()
+
+def play_song():
+    pygame.mixer.music.load("song/millionaire.mp3")
+    pygame.mixer.music.play(loops=0)
+
+def stop_song():
+    pygame.mixer.music.stop()
+
 
 
 
@@ -193,6 +206,32 @@ setbtn = Button(tab2,
                 bg="green",
                 activebackground="red",
                 ).place(x = 50, y = 350)
+
+#-------------------------------------------------------------
+
+#tab 3
+
+# music stuff
+
+musicbtn = Button(tab3,
+                  text="play",
+                  font=("poppins", 10, 'bold'),
+                  command= play_song,
+                  bg="green",
+                  activebackground="red",
+                  )
+musicbtn.grid(row=1, column=1, padx=20, pady=20)
+
+
+stopbtn = Button(tab3,
+                  text="stop",
+                  font=("poppins", 10, 'bold'),
+                  command= stop_song,
+                  bg="red",
+                  activebackground="brown",
+                  )
+stopbtn.grid(row=1, column=2, padx=20, pady=20)
+
 
 
 window.resizable(0,0)
