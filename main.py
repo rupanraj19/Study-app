@@ -1,13 +1,15 @@
 from tkinter import * # gui
 from PIL import Image, ImageTk #pillow
 from tkinter import ttk
-from notifypy import Notify
+from tkinter import filedialog # for file
+from tkinter import messagebox
+from notifypy import Notify  # for notification
 from plyer import notification
-import time
+import time # for time
 import pygame # for audio
+import os
 
-
-
+song_path = None
 tasks = []
 def add_task():
     gettask = addtask.get() # get from the add task entry box
@@ -87,11 +89,62 @@ def get_details():
                             app_icon=None,
                             timeout=5)
 
+def set_time():
+    try:
+        temp = int(hour.get()) * 3600 + int(minute.get()) * 60 + int(second.get())
+    except:
+        print("Enter correct time")
+
+    while temp > -1:
+        mins,secs = divmod(temp,60) # divmod(firstvalue = temp//60, secondvalue - temp%60)
+
+        # convert input in mins or secs to hours
+
+        hours = 0
+        if mins > 60:
+            hours, mins = divmod(mins, 60)
+
+        hour.set("{0:2d}".format(hours))
+        minute.set("{0:2d}".format(mins))
+        second.set("{0:2d}".format(secs))
+
+        window.update()
+        time.sleep(1)
+
+        # message box when temp value = 0
+
+        if (temp == 0):
+            messagebox.showinfo("Time Countdown", "Time over take 5 min break")
+
+        temp -= 1
+
+
+
 pygame.mixer.init()
 
+def upload_song():
+    global song_path
+    song_path = filedialog.askopenfilename(
+        title="select a song",
+        filetypes=[("mp3 files", "*.mp3"), ("wav files", "*.wav")]
+    )
+
+    if song_path:
+        file_name = os.path.basename(song_path)
+        # file_name = song_path.split("/")[-1]
+        songLabel.config(text="Song: " + file_name)
+
+
+
+
+
 def play_song():
-    pygame.mixer.music.load("song/millionaire.mp3")
-    pygame.mixer.music.play(loops=0)
+    if song_path:
+        pygame.mixer.music.load(song_path)
+        pygame.mixer.music.play(loops=0)
+    else:
+        pygame.mixer.music.load("song/millionaire.mp3")
+        pygame.mixer.music.play(loops=0)
 
 def stop_song():
     pygame.mixer.music.stop()
@@ -104,7 +157,14 @@ window = Tk() # instantiate window
 # window canvas
 window.geometry("600x600") # canvas size
 window.title("Focus rah") # canvas title
+window.configure(background="black")
 center_window(window)
+
+# Create an instance of ttk style
+s = ttk.Style()
+s.theme_use('default')
+s.configure('TNotebook', background="black")
+s.map("TNotebook.Tab", background=[('selected', 'red')])
 
 # icon and bg
 
@@ -127,9 +187,9 @@ label.pack() # pack to display it in center
 #add tabs in window
 tab_control = ttk.Notebook(window) # widget that manages a collection of window/displays
 
-tab1 = Frame(tab_control) #tab1
-tab2 = Frame(tab_control) #tab2
-tab3 = Frame(tab_control) #tab3
+tab1 = Frame(tab_control, bg='black') #tab1
+tab2 = Frame(tab_control, bg='black') #tab2
+tab3 = Frame(tab_control, bg='black') #tab3
 
 tab_control.add(tab1, text='To Do List')
 tab_control.add(tab2, text='Remainder' )
@@ -212,15 +272,20 @@ setbtn = Button(tab2,
 #tab 3
 
 # music stuff
+musicLabel = Label(tab3,
+                   text="Sound",
+                   font=("poppins", 20, 'bold'),
+                   )
+musicLabel.place(x = 250, y = 230)
 
 musicbtn = Button(tab3,
                   text="play",
                   font=("poppins", 10, 'bold'),
                   command= play_song,
                   bg="green",
-                  activebackground="red",
+                  activebackground="lightgreen",
                   )
-musicbtn.grid(row=1, column=1, padx=20, pady=20)
+musicbtn.place(x = 250, y = 280)
 
 
 stopbtn = Button(tab3,
@@ -228,9 +293,62 @@ stopbtn = Button(tab3,
                   font=("poppins", 10, 'bold'),
                   command= stop_song,
                   bg="red",
-                  activebackground="brown",
+                  activebackground="yellow",
                   )
-stopbtn.grid(row=1, column=2, padx=20, pady=20)
+stopbtn.place(x = 300, y = 280)
+
+uploadBtn = Button(tab3,
+                   text="upload a song",
+                   command= upload_song,
+                   font=("poppins", 9, 'bold'),
+                   bg="pink")
+uploadBtn.place(x = 250, y = 330)
+
+songLabel = Label(tab3,
+                  text="Song: Lofi " ,
+                  font=("poppins", 10, 'bold'),
+                )
+songLabel.place(x = 250, y = 380)
+
+# variables for time
+hour = StringVar()
+minute = StringVar()
+second = StringVar()
+
+# default values for time
+
+hour.set("00")
+minute.set("25")
+second.set("00")
+
+# entry for time
+
+hourEntry = Entry(tab3, textvariable=hour, width=3, font=("poppins", 10, 'bold'))
+hourEntry.place(x = 230, y = 120)
+
+minutesEntry = Entry(tab3, textvariable=minute, width=3, font=("poppins", 10, 'bold'))
+minutesEntry.place(x = 280, y = 120)
+
+secondsEntry = Entry(tab3, textvariable=second, width=3, font=("poppins", 10, 'bold'))
+secondsEntry.place(x = 330, y = 120)
+
+#  label for time
+timerLabel = Label(tab3, text="Timer", font=("poppins", 20, 'bold'))
+timerLabel.place(x =250, y = 50)
+
+hourLabel = Label(tab3, text="Hour", font=("poppins", 10, 'bold'))
+hourLabel.place(x = 230, y = 100)
+
+minutesLabel = Label(tab3, text="Mins", font=("poppins", 10, 'bold'))
+minutesLabel.place(x = 280, y = 100)
+
+secondsLabel = Label(tab3, text="Secs", font=("poppins", 10, 'bold'))
+secondsLabel.place(x = 330, y = 100)
+
+# btn for time
+
+setTimeBtn = Button(tab3, text="Set Time", width=10, font=("poppins", 10, 'bold'), command= set_time, bg="cyan")
+setTimeBtn.place(x = 245, y = 150)
 
 
 
