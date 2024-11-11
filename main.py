@@ -143,7 +143,7 @@ def play_song():
         pygame.mixer.music.load(song_path)
         pygame.mixer.music.play(loops=0)
     else:
-        pygame.mixer.music.load("song/millionaire.mp3")
+        pygame.mixer.music.load("song/lofirain.mp3")
         pygame.mixer.music.play(loops=0)
 
 def stop_song():
