@@ -1,3 +1,5 @@
+from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv())
 from tkinter import * # gui
 from PIL import Image, ImageTk #pillow
 from tkinter import ttk
@@ -5,15 +7,35 @@ from tkinter import filedialog # for file
 from tkinter import messagebox
 from notifypy import Notify  # for notification
 from plyer import notification
+from pymongo import MongoClient
+
+
+
 import time # for time
 import pygame # for audio
 import os
+import pprint
+
+password = os.environ.get("pwd")
+url = f"mongodb+srv://rupanraj2002:{password}@cluster0.wnzg1.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+client = MongoClient(url)
+
+dbs = client.list_database_names()
+task_db = client.Task
+collections = task_db.list_collection_names()
+print(collections)
+
+
 
 song_path = None
 tasks = []
 def add_task():
     gettask = addtask.get() # get from the add task entry box
     if gettask:
+        collections = task_db.dailyTasks
+        task_entry = {"task":gettask, "date":time.strftime("%Y-%m-%d %H:%M:%S")}
+        collections.insert_one(task_entry)
+        print(collections)
         tasks.append(gettask)
         update_task()
         addtask.delete(0, END) # clear the entry box after adding task
