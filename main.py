@@ -5,11 +5,11 @@ from PIL import Image, ImageTk #pillow
 from tkinter import ttk
 from tkinter import filedialog # for file
 from tkinter import messagebox
+from tkcalendar import Calendar
 from notifypy import Notify  # for notification
 from plyer import notification
 from pymongo import MongoClient
-
-
+from datetime import datetime
 
 import time # for time
 import pygame # for audio
@@ -29,6 +29,8 @@ print(collections)
 
 song_path = None
 tasks = []
+
+
 def add_task():
     gettask = addtask.get() # get from the add task entry box
     if gettask:
@@ -56,6 +58,8 @@ def delete_task():
 
     if selecttask:
         tasks.pop(selecttask[0])
+        collections = task_db.dailyTasks
+        collections.delete_one({"task":listbox.get(selecttask[0])})
         update_task()
     else:
         popupmsg("Please select task to delete")
@@ -172,6 +176,16 @@ def stop_song():
     pygame.mixer.music.stop()
 
 
+def load_task_for_today(listbox):
+    today = datetime.now().strftime("%Y-%m-%d")
+    collections = task_db.dailyTasks
+    today_tasks = collections.find({"date": {"$regex": f"^{today}"}})
+
+    for task in today_tasks:
+        tasks.append(task["task"])
+        listbox.insert(END, task)
+        print(tasks)
+
 
 
 window = Tk() # instantiate window
@@ -212,10 +226,12 @@ tab_control = ttk.Notebook(window) # widget that manages a collection of window/
 tab1 = Frame(tab_control, bg='black') #tab1
 tab2 = Frame(tab_control, bg='black') #tab2
 tab3 = Frame(tab_control, bg='black') #tab3
+tab4 = Frame(tab_control, bg='black') #tab4
 
 tab_control.add(tab1, text='To Do List')
 tab_control.add(tab2, text='Remainder' )
 tab_control.add(tab3, text='pomodore')
+tab_control.add(tab4, text="Tasks by Date")
 tab_control.pack(expand=1, fill='both')
 
 # either use grid or pack or place. dont mix them in same tab
@@ -235,7 +251,7 @@ addtaskbtn = Button(tab1,
 
 listbox = Listbox(tab1, width=50)
 listbox.grid(row=3, column=0, columnspan=2, pady=20)
-
+load_task_for_today(listbox)
 # delete task
 
 detelebtn = Button(tab1,
@@ -372,7 +388,9 @@ secondsLabel.place(x = 330, y = 100)
 setTimeBtn = Button(tab3, text="Set Time", width=10, font=("poppins", 10, 'bold'), command= set_time, bg="cyan")
 setTimeBtn.place(x = 245, y = 150)
 
-
+#tab 4
+calendar = Calendar(tab4, selectmode="day", year=2024, month=11, day=22)
+calendar.pack(pady=20)
 
 window.resizable(0,0)
 window.mainloop() # place window on computer screen, listen for events
