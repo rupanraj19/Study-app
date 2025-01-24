@@ -1,4 +1,43 @@
-Study app using Thinkter
+# Study App - Tkinter
+
+This is a study app built using Tkinter to help with task management and studying. I created this app as a part of my learning journey.
+I used PyInstaller to convert the `.py` script into an executable (`.exe`). I also added this executable to the Windows startup so that it automatically starts when the computer boots up and prompts for today's task list.
+
+## Features
+
+The app has 4 main tabs:
+
+1. **To-Do List**
+   - Add tasks
+   - Mark tasks as completed or delete tasks
+
+2. **Reminder**
+   - Choose a task and set a message and reminder time (notification)
+
+3. **Pomodoro Technique**
+   - 25-minute timer with a 5-minute break after each session
+   - Play music during the Pomodoro session
+
+4. **Filter Tasks**
+   - Filter tasks by date
+
+## Libraries Used
+
+- `pygame`: Used for playing music during Pomodoro sessions.
+- `plyer`, `notify_py`: Used for notifications.
+- `pymongo`: Used to connect to MongoDB.
+
+## Issues
+
+1. **Freezing on Setting Reminder**:
+   When setting a reminder for a notification, the app freezes until the notification appears. For example, if you set a reminder for 5 minutes, the app will freeze for 5 minutes.
+
+
+## Notifications
+
+- I used `notify_py` for setting reminders and notifications in the app.
+
+
 
 Screenshot of study app
 
